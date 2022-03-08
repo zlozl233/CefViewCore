@@ -35,7 +35,7 @@
 /// <summary>
 /// CEFVIEWClient.postMessage("postMessage", ...)
 /// </summary>
-#define CEFVIEW_POSSMESSAGE "postMessage"
+#define CEFVIEW_POSTMESSAGE "postMessage"
 
 /// <summary>
 /// CEFVIEWClient.addEventListener(type, listener)
