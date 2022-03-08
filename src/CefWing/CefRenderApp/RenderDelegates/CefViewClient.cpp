@@ -16,6 +16,8 @@ CefViewClient::V8Handler::Execute(const CefString& function,
 {
   if (function == CEFVIEW_INVOKEMETHOD)
     ExecuteNativeMethod(object, arguments, retval, exception);
+  else if (function == CEFVIEW_POSTMESSAGE)
+    ExecutePostMessageMethod(object, arguments, retval, exception);
   else if (function == CEFVIEW_ADDEVENTLISTENER)
     ExecuteAddEventListener(object, arguments, retval, exception);
   else if (function == CEFVIEW_REMOVEEVENTLISTENER)
@@ -35,6 +37,16 @@ CefViewClient::V8Handler::ExecuteNativeMethod(CefRefPtr<CefV8Value> object,
                                               CefString& exception)
 {
   client_->AsyncExecuteNativeMethod(arguments);
+  retval = CefV8Value::CreateUndefined();
+}
+
+void
+CefViewClient::V8Handler::ExecutePostMessageMethod(CefRefPtr<CefV8Value> object,
+                                                   const CefV8ValueList& arguments,
+                                                   CefRefPtr<CefV8Value>& retval,
+                                                   CefString& exception)
+{
+  client_->AsyncExecutePostMessageMethod(arguments);
   retval = CefV8Value::CreateUndefined();
 }
 
@@ -137,6 +149,15 @@ CefViewClient::CefViewClient(CefRefPtr<CefBrowser> browser,
   // add this function to window object
   bridgeObject_->SetValue(CEFVIEW_INVOKEMETHOD,
                           funcInvokeMethod,
+                          static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTENUM |
+                                                                     V8_PROPERTY_ATTRIBUTE_DONTDELETE));
+
+    // create function "postMessage"
+  CefRefPtr<CefV8Value> funcPostMessageMethod = CefV8Value::CreateFunction(CEFVIEW_POSTMESSAGE, v8Handler_);
+  // add this function to window object
+  bridgeObject_->SetValue(CEFVIEW_POSTMESSAGE,
+                          funcPostMessageMethod,
                           static_cast<CefV8Value::PropertyAttribute>(V8_PROPERTY_ATTRIBUTE_READONLY |
                                                                      V8_PROPERTY_ATTRIBUTE_DONTENUM |
                                                                      V8_PROPERTY_ATTRIBUTE_DONTDELETE));
@@ -300,6 +321,41 @@ CefViewClient::AsyncExecuteNativeMethod(const CefV8ValueList& arguments)
   for (std::size_t i = 0; i < arguments.size(); i++) {
     auto cefValue = V8ValueToCefValue(arguments[i].get());
     args->SetValue(i, cefValue);
+  }
+
+  // send the message
+  if (browser_)
+    frame_->SendProcessMessage(PID_BROWSER, msg);
+}
+
+void
+CefViewClient::AsyncExecutePostMessageMethod(const CefV8ValueList& arguments)
+{
+  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
+
+  //** arguments(CefValueList)
+  //** +-------+
+  //** |0 name | <- postMessage
+  //** |1 arg1 |
+  //** |2 arg2 |
+  //** |3 arg3 |
+  //** |4 arg4 |
+  //** | ...   |
+  //** | ...   |
+  //** | ...   |
+  //** | ...   |
+  //** +-------+
+  CefRefPtr<CefListValue> args = msg->GetArgumentList();
+
+  // push back function Name
+  CefRefPtr<CefValue> cefValue_0 = CefValue::Create();
+  cefValue_0->SetString("postMessage");
+  args->SetValue(0, cefValue_0);
+
+  // push back all the arguments
+  for (std::size_t i = 0; i < arguments.size(); i++) {
+    auto cefValue = V8ValueToCefValue(arguments[i].get());
+    args->SetValue(i+1, cefValue);
   }
 
   // send the message

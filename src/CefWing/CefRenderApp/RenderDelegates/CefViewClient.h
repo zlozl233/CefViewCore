@@ -74,6 +74,11 @@ class CefViewClient : public CefBaseRefCounted
                              CefRefPtr<CefV8Value>& retval,
                              CefString& exception);
 
+     void ExecutePostMessageMethod(CefRefPtr<CefV8Value> object,
+                             const CefV8ValueList& arguments,
+                             CefRefPtr<CefV8Value>& retval,
+                             CefString& exception);
+
     /// <summary>
     ///
     /// </summary>
@@ -153,6 +158,8 @@ public:
   /// </summary>
   /// <param name="arguments"></param>
   void AsyncExecuteNativeMethod(const CefV8ValueList& arguments);
+
+  void AsyncExecutePostMessageMethod(const CefV8ValueList& arguments);
 
   /// <summary>
   ///
