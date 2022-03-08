@@ -33,6 +33,11 @@
 #define CEFVIEW_INVOKEMETHOD "invokeMethod"
 
 /// <summary>
+/// CEFVIEWClient.postMessage("postMessage", ...)
+/// </summary>
+#define CEFVIEW_POSSMESSAGE "postMessage"
+
+/// <summary>
 /// CEFVIEWClient.addEventListener(type, listener)
 /// </summary>
 #define CEFVIEW_ADDEVENTLISTENER "addEventListener"
