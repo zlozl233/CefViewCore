@@ -143,6 +143,9 @@ CefViewBrowserClient::InvokeMethod(CefRefPtr<CefBrowser> browser,
   method = arguments->GetString(0).ToString();
   if (method.empty())
     return false;
+
+  logI("CefViewBrowserClient::InvokeMethod method is: %s" , method.c_str());
+
   arguments->Remove(0);
 
   delegate->invokeMethodNotify(browser, frame->GetIdentifier(), method, arguments);

@@ -38,6 +38,8 @@ CefViewBrowserClient::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   if (is_closing_)
     return true;
 
+  logI("CefViewBrowserClient::OnBeforePopup target_url is %s ", target_url.ToString().c_str());
+
   // Redirect all popup page into the source frame forcefully
   frame->LoadURL(target_url);
   // Don't allow new window or tab
