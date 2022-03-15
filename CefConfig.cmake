@@ -1,16 +1,41 @@
 #
 # The link for downloading the CEF binary sdk 
 #
-set(CEF_SDK_VERSION 
+
+if(OS_WINDOWS)
+  set(CEF_SDK_VERSION 
+  # Old version (deprecated and incompatible)
+  # "89.0.12+g2b76680+chromium-89.0.4389.90"
+
+  # Current version
+  "97.0.0-4692_win_baijiayun.2484+gb6c14b9+chromium-97.0.4692.71"
+  # Newer version (need to adpat)
+  # --
+)
+elseif (OS_LINUX)
+  set(CEF_SDK_VERSION 
   # Old version (deprecated and incompatible)
   # "89.0.12+g2b76680+chromium-89.0.4389.90"
 
   # Current version
   "95.7.12+g99c4ac0+chromium-95.0.4638.54"
-
   # Newer version (need to adpat)
   # --
 )
+elseif(OS_MACOS)
+  set(CEF_SDK_VERSION 
+  # Old version (deprecated and incompatible)
+  # "89.0.12+g2b76680+chromium-89.0.4389.90"
+
+  # Current version
+  "95.7.12+g99c4ac0+chromium-95.0.4638.54"
+  # Newer version (need to adpat)
+  # --
+)
+else()
+  message(FATAL_ERROR "CEF_SDK_VERSION Unsupported plaftorm")
+  endif()
+  
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # Generally, there is NO NEED to modify the following config
@@ -24,7 +49,7 @@ elseif (OS_LINUX)
 elseif(OS_MACOS)
   set(CEF_SDK_PLATFORM "macosx64")
 else()
-  message(FATAL_ERROR "Unsupported plaftorm")
+  message(FATAL_ERROR "CEF_SDK_PLATFORM Unsupported plaftorm")
 endif()
 
 # set cef sdk package name
